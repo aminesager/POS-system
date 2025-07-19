@@ -1,20 +1,14 @@
 import express from "express";
-import db from "./database";
+import { initializeDataSource } from "./main/db/dataSource";
+import articleRouter from "./modules/article/article.controller";
 
 const app = express();
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+app.use("/articles", articleRouter);
 
-app.get("/articles", (req, res) => {
-  db.all("SELECT * FROM articles", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-app.listen(3000, () => {
-  console.log("🚀 Server running on http://localhost:3000");
+initializeDataSource().then(() => {
+  app.listen(3000, () =>
+    console.log("Server running on http://localhost:3000")
+  );
 });
